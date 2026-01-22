@@ -56,7 +56,7 @@ function Card({ title, children }: CardProps) {
 // Usage
 <Card title="Hello">
   <p>Card content</p>
-</Card>
+</Card>;
 ```
 
 ### Union Types for Variants
@@ -75,11 +75,7 @@ function Alert({ message, type }: AlertProps) {
     info: "bg-blue-100 text-blue-800",
   };
 
-  return (
-    <div className={colors[type]}>
-      {message}
-    </div>
-  );
+  return <div className={colors[type]}>{message}</div>;
 }
 ```
 
@@ -223,7 +219,7 @@ function Button({ variant, children, ...props }: ButtonProps) {
 // All button props are available
 <Button variant="primary" type="submit" disabled>
   Submit
-</Button>
+</Button>;
 ```
 
 ## Type Utilities
@@ -271,7 +267,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <input ref={ref} {...props} />
       </label>
     );
-  }
+  },
 );
 ```
 

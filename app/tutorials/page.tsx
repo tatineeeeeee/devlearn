@@ -11,10 +11,16 @@ export const metadata: Metadata = {
 };
 
 interface TutorialsPageProps {
-  searchParams: Promise<{ category?: string; tag?: string; difficulty?: string }>;
+  searchParams: Promise<{
+    category?: string;
+    tag?: string;
+    difficulty?: string;
+  }>;
 }
 
-export default async function TutorialsPage({ searchParams }: TutorialsPageProps) {
+export default async function TutorialsPage({
+  searchParams,
+}: TutorialsPageProps) {
   const params = await searchParams;
   const allTutorials = getAllTutorials();
   const categories = getAllCategories();
@@ -24,19 +30,19 @@ export default async function TutorialsPage({ searchParams }: TutorialsPageProps
 
   if (params.category) {
     filteredTutorials = filteredTutorials.filter(
-      (t) => t.category.toLowerCase() === params.category!.toLowerCase()
+      (t) => t.category.toLowerCase() === params.category!.toLowerCase(),
     );
   }
 
   if (params.tag) {
     filteredTutorials = filteredTutorials.filter((t) =>
-      t.tags.some((tag) => tag.toLowerCase() === params.tag!.toLowerCase())
+      t.tags.some((tag) => tag.toLowerCase() === params.tag!.toLowerCase()),
     );
   }
 
   if (params.difficulty) {
     filteredTutorials = filteredTutorials.filter(
-      (t) => t.difficulty === params.difficulty
+      (t) => t.difficulty === params.difficulty,
     );
   }
 
@@ -67,7 +73,7 @@ export default async function TutorialsPage({ searchParams }: TutorialsPageProps
                     "block px-3 py-2 rounded-lg text-sm transition-colors",
                     !params.category
                       ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
                   )}
                 >
                   All Categories
@@ -80,7 +86,7 @@ export default async function TutorialsPage({ searchParams }: TutorialsPageProps
                       "block px-3 py-2 rounded-lg text-sm capitalize transition-colors",
                       params.category?.toLowerCase() === category.toLowerCase()
                         ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
                     )}
                   >
                     {category}
@@ -103,7 +109,7 @@ export default async function TutorialsPage({ searchParams }: TutorialsPageProps
                       "block px-3 py-2 rounded-lg text-sm capitalize transition-colors",
                       params.difficulty === difficulty
                         ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800",
                     )}
                   >
                     {difficulty}
@@ -127,7 +133,7 @@ export default async function TutorialsPage({ searchParams }: TutorialsPageProps
                         "px-3 py-1 rounded-full text-xs transition-colors",
                         params.tag?.toLowerCase() === tag.toLowerCase()
                           ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                          : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700",
                       )}
                     >
                       #{tag}

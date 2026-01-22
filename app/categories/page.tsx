@@ -4,7 +4,8 @@ import { getAllTutorials, getAllCategories } from "@/lib/tutorials";
 
 export const metadata: Metadata = {
   title: "Categories",
-  description: "Browse tutorials by category - Next.js, React, Tailwind CSS, TypeScript, and more.",
+  description:
+    "Browse tutorials by category - Next.js, React, Tailwind CSS, TypeScript, and more.",
 };
 
 export default function CategoriesPage() {
@@ -23,9 +24,9 @@ export default function CategoriesPage() {
           Categories
         </h1>
         <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl">
-          Explore tutorials organized by technology. Whether you&apos;re learning
-          frontend frameworks, CSS utilities, or TypeScript, find the perfect
-          starting point.
+          Explore tutorials organized by technology. Whether you&apos;re
+          learning frontend frameworks, CSS utilities, or TypeScript, find the
+          perfect starting point.
         </p>
       </div>
 

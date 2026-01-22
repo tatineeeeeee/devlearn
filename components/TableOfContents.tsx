@@ -19,7 +19,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
             key={heading.id}
             className={cn(
               heading.level === 2 && "ml-0",
-              heading.level === 3 && "ml-4"
+              heading.level === 3 && "ml-4",
             )}
           >
             <Link

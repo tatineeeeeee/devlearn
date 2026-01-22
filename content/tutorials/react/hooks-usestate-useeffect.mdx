@@ -19,13 +19,11 @@ import { useState } from "react";
 
 function Counter() {
   const [count, setCount] = useState(0);
-  
+
   return (
     <div>
       <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>
-        Increment
-      </button>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
     </div>
   );
 }
@@ -40,18 +38,15 @@ function UserForm() {
   const [user, setUser] = useState({
     name: "",
     email: "",
-    age: 0
+    age: 0,
   });
 
   const updateName = (name: string) => {
-    setUser(prev => ({ ...prev, name }));
+    setUser((prev) => ({ ...prev, name }));
   };
 
   return (
-    <input
-      value={user.name}
-      onChange={(e) => updateName(e.target.value)}
-    />
+    <input value={user.name} onChange={(e) => updateName(e.target.value)} />
   );
 }
 ```
@@ -84,12 +79,12 @@ function UserProfile({ userId }) {
       const data = await response.json();
       setUser(data);
     }
-    
+
     fetchUser();
   }, [userId]); // Dependency array
 
   if (!user) return <p>Loading...</p>;
-  
+
   return <h1>{user.name}</h1>;
 }
 ```
@@ -140,19 +135,19 @@ A common pattern for adding and removing event listeners:
 function WindowSize() {
   const [size, setSize] = useState({
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
   });
 
   useEffect(() => {
     function handleResize() {
       setSize({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       });
     }
 
     window.addEventListener("resize", handleResize);
-    
+
     return () => {
       window.removeEventListener("resize", handleResize);
     };

@@ -44,7 +44,7 @@ export function Header() {
             <SearchBar />
             <ThemeToggle />
             <a
-              href="https://github.com"
+              href="https://github.com/tatineeeeeee/devlearn"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"

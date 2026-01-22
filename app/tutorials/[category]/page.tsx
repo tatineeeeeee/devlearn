@@ -42,11 +42,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-8">
-        <Link href="/tutorials" className="hover:text-gray-900 dark:hover:text-white">
+        <Link
+          href="/tutorials"
+          className="hover:text-gray-900 dark:hover:text-white"
+        >
           Tutorials
         </Link>
         <ChevronRight className="w-4 h-4" />
-        <span className="text-gray-900 dark:text-white capitalize">{category}</span>
+        <span className="text-gray-900 dark:text-white capitalize">
+          {category}
+        </span>
       </nav>
 
       <div className="mb-12">

@@ -1,6 +1,14 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Github, Twitter, Heart, BookOpen, Users, Star, Code } from "lucide-react";
+import {
+  Github,
+  Twitter,
+  Heart,
+  BookOpen,
+  Users,
+  Star,
+  Code,
+} from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About",
@@ -116,12 +124,12 @@ export default function AboutPage() {
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-xl mx-auto">
             DevLearn is open source and we welcome contributions! Whether
-            it&apos;s writing tutorials, fixing bugs, or improving documentation,
-            every contribution helps.
+            it&apos;s writing tutorials, fixing bugs, or improving
+            documentation, every contribution helps.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/tatineeeeeee/devlearn"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium hover:opacity-90 transition-opacity"
@@ -148,7 +156,8 @@ export default function AboutPage() {
           Get in Touch
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Have questions, suggestions, or feedback? We&apos;d love to hear from you.
+          Have questions, suggestions, or feedback? We&apos;d love to hear from
+          you.
         </p>
         <Link
           href="mailto:hello@devlearn.dev"

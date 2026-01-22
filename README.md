@@ -32,23 +32,26 @@
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm, yarn, or pnpm
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
-git clone https://github.com/yourusername/devlearn.git
+git clone https://github.com/tatineeeeeee/devlearn.git
 cd devlearn
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -83,11 +86,13 @@ npm run dev
 ## ✍️ Adding Tutorials
 
 1. Create a new `.mdx` file in the appropriate category folder:
+
 ```
 content/tutorials/[category]/[slug].mdx
 ```
 
 2. Add frontmatter at the top:
+
 ```yaml
 ---
 title: "Your Tutorial Title"
@@ -136,6 +141,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## ⭐ Support
 
 If you find this project useful, please consider:
+
 - Giving it a star on GitHub ⭐
 - Sharing it with others
 - Contributing tutorials or improvements

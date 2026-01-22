@@ -89,7 +89,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
             <div
               className={cn(
                 "absolute inset-0 bg-linear-to-br opacity-90",
-                category.color
+                category.color,
               )}
             />
             <div className="relative z-10">
@@ -98,13 +98,16 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
                   <Icon className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-sm font-medium text-white/80">
-                  {category.count} {category.count === 1 ? "tutorial" : "tutorials"}
+                  {category.count}{" "}
+                  {category.count === 1 ? "tutorial" : "tutorials"}
                 </span>
               </div>
               <h3 className="text-xl font-bold text-white mb-2 capitalize">
                 {category.name}
               </h3>
-              <p className="text-white/80 text-sm mb-4">{category.description}</p>
+              <p className="text-white/80 text-sm mb-4">
+                {category.description}
+              </p>
               <div className="flex items-center gap-1 text-white font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity">
                 Browse tutorials <ArrowRight className="w-4 h-4" />
               </div>

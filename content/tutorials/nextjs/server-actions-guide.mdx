@@ -24,10 +24,10 @@ Define a Server Action by adding `"use server"` at the top of an async function:
 
 export async function createTodo(formData: FormData) {
   const title = formData.get("title") as string;
-  
+
   // Save to database
   await db.todos.create({ title });
-  
+
   // Revalidate the cache
   revalidatePath("/todos");
 }
@@ -44,12 +44,7 @@ import { createTodo } from "./actions";
 export default function TodosPage() {
   return (
     <form action={createTodo}>
-      <input
-        type="text"
-        name="title"
-        placeholder="Enter todo title"
-        required
-      />
+      <input type="text" name="title" placeholder="Enter todo title" required />
       <button type="submit">Add Todo</button>
     </form>
   );
@@ -71,7 +66,7 @@ import { useFormStatus } from "react-dom";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
-  
+
   return (
     <button type="submit" disabled={pending}>
       {pending ? "Saving..." : "Save"}
@@ -93,13 +88,12 @@ export async function createPost(formData: FormData) {
   try {
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
-    
+
     await db.posts.create({ title, content });
-    
   } catch (error) {
     return { error: "Failed to create post" };
   }
-  
+
   redirect("/posts");
 }
 ```
@@ -117,7 +111,7 @@ import { addItem } from "./actions";
 export function ItemList({ items }) {
   const [optimisticItems, addOptimisticItem] = useOptimistic(
     items,
-    (state, newItem) => [...state, newItem]
+    (state, newItem) => [...state, newItem],
   );
 
   async function handleSubmit(formData: FormData) {
@@ -155,10 +149,10 @@ import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function updateUser(formData: FormData) {
   await db.users.update(/* ... */);
-  
+
   // Revalidate a specific path
   revalidatePath("/profile");
-  
+
   // Or revalidate by tag
   revalidateTag("user-data");
 }

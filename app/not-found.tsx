@@ -5,13 +5,15 @@ export default function NotFound() {
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="text-center">
-        <p className="text-9xl font-bold text-gray-200 dark:text-gray-800">404</p>
+        <p className="text-9xl font-bold text-gray-200 dark:text-gray-800">
+          404
+        </p>
         <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
           Page not found
         </h1>
         <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-          Sorry, we couldn&apos;t find the page you&apos;re looking for. It might have
-          been moved or doesn&apos;t exist.
+          Sorry, we couldn&apos;t find the page you&apos;re looking for. It
+          might have been moved or doesn&apos;t exist.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link

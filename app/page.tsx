@@ -9,7 +9,11 @@ import {
   Star,
 } from "lucide-react";
 import { TutorialCard, CategoryGrid } from "@/components";
-import { getAllTutorials, getFeaturedTutorials, getAllCategories } from "@/lib/tutorials";
+import {
+  getAllTutorials,
+  getFeaturedTutorials,
+  getAllCategories,
+} from "@/lib/tutorials";
 
 export default function Home() {
   const allTutorials = getAllTutorials();
@@ -63,9 +67,17 @@ export default function Home() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-4xl mx-auto">
             {[
-              { icon: BookOpen, label: "Tutorials", value: `${allTutorials.length}+` },
+              {
+                icon: BookOpen,
+                label: "Tutorials",
+                value: `${allTutorials.length}+`,
+              },
               { icon: Code, label: "Code Examples", value: "100+" },
-              { icon: Users, label: "Categories", value: categories.length.toString() },
+              {
+                icon: Users,
+                label: "Categories",
+                value: categories.length.toString(),
+              },
               { icon: Star, label: "Open Source", value: "100%" },
             ].map((stat) => (
               <div
@@ -184,7 +196,7 @@ export default function Home() {
                 or improving documentation.
               </p>
               <a
-                href="https://github.com"
+                href="https://github.com/tatineeeeeee/devlearn"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-gray-900 font-medium hover:bg-gray-100 transition-colors"

@@ -21,7 +21,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com"
+                href="https://github.com/tatineeeeeee/devlearn"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
@@ -102,7 +102,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com"
+                  href="https://github.com/tatineeeeeee/devlearn"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -112,7 +112,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com"
+                  href="https://github.com/tatineeeeeee/devlearn"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -129,7 +129,7 @@ export function Footer() {
             Made with <Heart className="w-4 h-4 text-red-500 fill-red-500" /> by
             the DevLearn community. Open source on{" "}
             <a
-              href="https://github.com"
+              href="https://github.com/tatineeeeeee/devlearn"
               className="text-blue-600 dark:text-blue-400 hover:underline"
             >
               GitHub

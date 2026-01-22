@@ -108,7 +108,9 @@ html {
   font-weight: 500;
 }
 
-.dark .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+.dark
+  .prose
+  :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
   background: #334155;
 }
 
@@ -143,4 +145,3 @@ html {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
-

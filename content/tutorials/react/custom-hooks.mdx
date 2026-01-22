@@ -55,9 +55,9 @@ function useLocalStorage<T>(key: string, initialValue: T) {
 // Usage
 function App() {
   const [theme, setTheme] = useLocalStorage("theme", "light");
-  
+
   return (
-    <button onClick={() => setTheme(t => t === "light" ? "dark" : "light")}>
+    <button onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}>
       Theme: {theme}
     </button>
   );
@@ -86,7 +86,7 @@ function useFetch<T>(url: string): UseFetchResult<T> {
   const fetchData = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error("Request failed");
@@ -115,7 +115,9 @@ function UserList() {
 
   return (
     <ul>
-      {users?.map(user => <li key={user.id}>{user.name}</li>)}
+      {users?.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
     </ul>
   );
 }
@@ -175,7 +177,7 @@ function useToggle(initialValue = false) {
   const [value, setValue] = useState(initialValue);
 
   const toggle = useCallback(() => {
-    setValue(v => !v);
+    setValue((v) => !v);
   }, []);
 
   const setTrue = useCallback(() => setValue(true), []);
@@ -218,7 +220,7 @@ function useMediaQuery(query: string): boolean {
 
     const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
     mediaQuery.addEventListener("change", handler);
-    
+
     return () => mediaQuery.removeEventListener("change", handler);
   }, [query]);
 
