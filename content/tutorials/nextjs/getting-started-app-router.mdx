@@ -1,0 +1,157 @@
+---
+title: "Getting Started with Next.js 16 App Router"
+description: "Learn how to build modern web applications with Next.js 16's App Router, including routing, layouts, and server components."
+date: "2026-01-20"
+author: "DevLearn Team"
+tags: ["nextjs", "react", "app-router", "server-components"]
+difficulty: "beginner"
+featured: true
+---
+
+Next.js 16 brings powerful features for building modern web applications. In this tutorial, we'll explore the App Router and learn how to create fast, SEO-friendly applications.
+
+## What is the App Router?
+
+The App Router is Next.js's recommended way to build applications. It uses React Server Components by default and provides a file-system based router with support for layouts, nested routing, loading states, and error handling.
+
+## Creating Your First Page
+
+In the App Router, pages are created by adding a `page.tsx` file inside a folder in the `app` directory. The folder name becomes the URL path.
+
+```tsx
+// app/page.tsx
+export default function HomePage() {
+  return (
+    <main>
+      <h1>Welcome to my Next.js App!</h1>
+      <p>This is the home page.</p>
+    </main>
+  );
+}
+```
+
+## Creating Layouts
+
+Layouts allow you to share UI between pages. Create a `layout.tsx` file to define a layout that wraps your pages.
+
+```tsx
+// app/layout.tsx
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <nav>
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+        </nav>
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+## Dynamic Routes
+
+Create dynamic routes by using square brackets in folder names. This is perfect for blog posts, product pages, or any content with unique identifiers.
+
+```tsx
+// app/blog/[slug]/page.tsx
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function BlogPost({ params }: PageProps) {
+  const { slug } = await params;
+  
+  return (
+    <article>
+      <h1>Blog Post: {slug}</h1>
+    </article>
+  );
+}
+```
+
+## Server Components vs Client Components
+
+By default, all components in the App Router are Server Components. They run on the server and can directly access databases, file systems, and other backend resources.
+
+```tsx
+// Server Component (default)
+async function ServerComponent() {
+  const data = await fetch('https://api.example.com/data');
+  return <div>{/* render data */}</div>;
+}
+```
+
+For interactive components that need browser APIs or React hooks, add the `"use client"` directive:
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+```
+
+## Loading States
+
+Create a `loading.tsx` file to show loading UI while your page content loads:
+
+```tsx
+// app/dashboard/loading.tsx
+export default function Loading() {
+  return (
+    <div className="animate-pulse">
+      <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+    </div>
+  );
+}
+```
+
+## Error Handling
+
+Handle errors gracefully with `error.tsx`:
+
+```tsx
+"use client";
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
+  return (
+    <div>
+      <h2>Something went wrong!</h2>
+      <button onClick={reset}>Try again</button>
+    </div>
+  );
+}
+```
+
+## Next Steps
+
+Now that you understand the basics of Next.js App Router, try building a small project! Here are some ideas:
+
+- Personal blog with MDX
+- Portfolio website
+- Todo application
+- E-commerce product page
+
+Keep learning and happy coding! 🚀

@@ -1,0 +1,177 @@
+---
+title: "Server Actions in Next.js: Complete Guide"
+description: "Learn how to use Server Actions in Next.js to handle form submissions, mutations, and data revalidation without writing API routes."
+date: "2026-01-18"
+author: "DevLearn Team"
+tags: ["nextjs", "server-actions", "forms", "mutations"]
+difficulty: "intermediate"
+featured: true
+---
+
+Server Actions are a powerful feature in Next.js that let you run server-side code directly from your components. Say goodbye to creating separate API routes for simple mutations!
+
+## What Are Server Actions?
+
+Server Actions are asynchronous functions that execute on the server. They can be used in both Server and Client Components to handle form submissions, data mutations, and more.
+
+## Creating Your First Server Action
+
+Define a Server Action by adding `"use server"` at the top of an async function:
+
+```tsx
+// app/actions.ts
+"use server";
+
+export async function createTodo(formData: FormData) {
+  const title = formData.get("title") as string;
+  
+  // Save to database
+  await db.todos.create({ title });
+  
+  // Revalidate the cache
+  revalidatePath("/todos");
+}
+```
+
+## Using Server Actions in Forms
+
+The most common use case is handling form submissions:
+
+```tsx
+// app/todos/page.tsx
+import { createTodo } from "./actions";
+
+export default function TodosPage() {
+  return (
+    <form action={createTodo}>
+      <input
+        type="text"
+        name="title"
+        placeholder="Enter todo title"
+        required
+      />
+      <button type="submit">Add Todo</button>
+    </form>
+  );
+}
+```
+
+## Progressive Enhancement
+
+Forms using Server Actions work even without JavaScript! The browser falls back to a standard form submission.
+
+## Adding Loading States
+
+Use the `useFormStatus` hook to show loading indicators:
+
+```tsx
+"use client";
+
+import { useFormStatus } from "react-dom";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  
+  return (
+    <button type="submit" disabled={pending}>
+      {pending ? "Saving..." : "Save"}
+    </button>
+  );
+}
+```
+
+## Error Handling
+
+Handle errors gracefully with try-catch:
+
+```tsx
+"use server";
+
+import { redirect } from "next/navigation";
+
+export async function createPost(formData: FormData) {
+  try {
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    
+    await db.posts.create({ title, content });
+    
+  } catch (error) {
+    return { error: "Failed to create post" };
+  }
+  
+  redirect("/posts");
+}
+```
+
+## Optimistic Updates
+
+Combine Server Actions with `useOptimistic` for instant UI feedback:
+
+```tsx
+"use client";
+
+import { useOptimistic } from "react";
+import { addItem } from "./actions";
+
+export function ItemList({ items }) {
+  const [optimisticItems, addOptimisticItem] = useOptimistic(
+    items,
+    (state, newItem) => [...state, newItem]
+  );
+
+  async function handleSubmit(formData: FormData) {
+    const newItem = formData.get("item");
+    addOptimisticItem({ text: newItem, pending: true });
+    await addItem(formData);
+  }
+
+  return (
+    <>
+      <form action={handleSubmit}>
+        <input name="item" />
+        <button>Add</button>
+      </form>
+      <ul>
+        {optimisticItems.map((item, i) => (
+          <li key={i} style={{ opacity: item.pending ? 0.5 : 1 }}>
+            {item.text}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+```
+
+## Revalidating Data
+
+After mutations, revalidate cached data:
+
+```tsx
+"use server";
+
+import { revalidatePath, revalidateTag } from "next/cache";
+
+export async function updateUser(formData: FormData) {
+  await db.users.update(/* ... */);
+  
+  // Revalidate a specific path
+  revalidatePath("/profile");
+  
+  // Or revalidate by tag
+  revalidateTag("user-data");
+}
+```
+
+## Best Practices
+
+1. **Keep actions focused** - One action per mutation
+2. **Validate input** - Always validate form data server-side
+3. **Handle errors** - Return meaningful error messages
+4. **Use TypeScript** - Type your form data and returns
+5. **Revalidate wisely** - Only revalidate what's necessary
+
+## Conclusion
+
+Server Actions simplify data mutations in Next.js applications. They reduce boilerplate, improve security, and provide a great developer experience. Start using them in your next project!

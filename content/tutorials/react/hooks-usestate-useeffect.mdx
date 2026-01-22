@@ -1,0 +1,220 @@
+---
+title: "React Hooks Deep Dive: useState and useEffect"
+description: "Master the two most essential React hooks. Learn state management and side effects with practical examples and best practices."
+date: "2026-01-15"
+author: "DevLearn Team"
+tags: ["react", "hooks", "useState", "useEffect"]
+difficulty: "beginner"
+featured: true
+---
+
+React Hooks revolutionized how we write React components. Let's dive deep into the two most fundamental hooks: `useState` and `useEffect`.
+
+## Understanding useState
+
+The `useState` hook lets you add state to functional components. It returns an array with the current state value and a function to update it.
+
+```tsx
+import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  );
+}
+```
+
+## State with Objects
+
+When managing object state, remember to spread the previous state:
+
+```tsx
+function UserForm() {
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    age: 0
+  });
+
+  const updateName = (name: string) => {
+    setUser(prev => ({ ...prev, name }));
+  };
+
+  return (
+    <input
+      value={user.name}
+      onChange={(e) => updateName(e.target.value)}
+    />
+  );
+}
+```
+
+## Lazy Initial State
+
+For expensive initial state calculations, pass a function:
+
+```tsx
+// ❌ Runs on every render
+const [items, setItems] = useState(expensiveCalculation());
+
+// ✅ Runs only on first render
+const [items, setItems] = useState(() => expensiveCalculation());
+```
+
+## Understanding useEffect
+
+The `useEffect` hook lets you perform side effects in functional components. It runs after the render is committed to the screen.
+
+```tsx
+import { useState, useEffect } from "react";
+
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const response = await fetch(`/api/users/${userId}`);
+      const data = await response.json();
+      setUser(data);
+    }
+    
+    fetchUser();
+  }, [userId]); // Dependency array
+
+  if (!user) return <p>Loading...</p>;
+  
+  return <h1>{user.name}</h1>;
+}
+```
+
+## The Dependency Array
+
+The dependency array controls when your effect runs:
+
+```tsx
+// Runs after every render
+useEffect(() => {
+  console.log("Every render");
+});
+
+// Runs only on mount
+useEffect(() => {
+  console.log("Mount only");
+}, []);
+
+// Runs when dependencies change
+useEffect(() => {
+  console.log("Count changed:", count);
+}, [count]);
+```
+
+## Cleanup Functions
+
+Return a function to clean up subscriptions or timers:
+
+```tsx
+useEffect(() => {
+  const timer = setInterval(() => {
+    console.log("Tick");
+  }, 1000);
+
+  // Cleanup function
+  return () => {
+    clearInterval(timer);
+  };
+}, []);
+```
+
+## Event Listeners Example
+
+A common pattern for adding and removing event listeners:
+
+```tsx
+function WindowSize() {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    function handleResize() {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    }
+
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <p>
+      Window: {size.width} x {size.height}
+    </p>
+  );
+}
+```
+
+## Common Mistakes to Avoid
+
+### 1. Missing Dependencies
+
+```tsx
+// ❌ Bug: effect uses count but doesn't list it
+useEffect(() => {
+  document.title = `Count: ${count}`;
+}, []);
+
+// ✅ Correct: count is a dependency
+useEffect(() => {
+  document.title = `Count: ${count}`;
+}, [count]);
+```
+
+### 2. Object/Array Dependencies
+
+```tsx
+// ❌ Creates new object each render, effect runs every time
+useEffect(() => {
+  fetchData(options);
+}, [{ page: 1 }]);
+
+// ✅ Use primitive values or useMemo
+const page = 1;
+useEffect(() => {
+  fetchData({ page });
+}, [page]);
+```
+
+### 3. Infinite Loops
+
+```tsx
+// ❌ Infinite loop: sets state which triggers re-render
+useEffect(() => {
+  setCount(count + 1);
+}, [count]);
+```
+
+## Best Practices
+
+1. **One effect per concern** - Don't mix unrelated logic
+2. **Clean up properly** - Prevent memory leaks
+3. **Be honest about dependencies** - List all values used
+4. **Avoid unnecessary effects** - Some logic belongs in event handlers
+
+## Conclusion
+
+`useState` and `useEffect` are the foundation of React Hooks. Master these, and you'll be well-prepared to tackle more advanced hooks like `useReducer`, `useContext`, and custom hooks.
+
+Keep practicing and happy coding! 🎉

@@ -1,36 +1,147 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevLearn - Open Source Tutorial Blog
 
-## Getting Started
+<div align="center">
+  <h3>🚀 Learn Modern Web Development</h3>
+  <p>Free, high-quality tutorials for Next.js, React, Tailwind CSS, TypeScript, and more.</p>
+</div>
 
-First, run the development server:
+---
 
+## ✨ Features
+
+- 📚 **Rich Tutorial Content** - Comprehensive tutorials with code examples
+- 🎨 **Beautiful UI** - Modern, responsive design with dark mode support
+- 🔍 **Search** - Full-text search across all tutorials (Ctrl/Cmd + K)
+- 🏷️ **Categorized** - Tutorials organized by technology and difficulty
+- 📱 **Mobile-First** - Fully responsive design
+- ⚡ **Fast** - Built with Next.js 16 App Router and React Server Components
+- 🌙 **Dark Mode** - System-aware theme switching
+- 📖 **MDX Support** - Write tutorials in Markdown with JSX components
+- 🎯 **Syntax Highlighting** - Beautiful code blocks with Shiki
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Content**: MDX with next-mdx-remote
+- **Syntax Highlighting**: Shiki
+- **Icons**: Lucide React
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm, yarn, or pnpm
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/devlearn.git
+cd devlearn
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000)
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   ├── about/             # About page
+│   ├── categories/        # Categories page
+│   ├── tutorials/         # Tutorial pages
+│   │   ├── [category]/    # Category pages
+│   │   │   └── [slug]/    # Individual tutorial pages
+│   └── layout.tsx         # Root layout
+├── components/            # React components
+├── content/              # Tutorial content (MDX)
+│   └── tutorials/
+│       ├── nextjs/
+│       ├── react/
+│       ├── tailwind/
+│       └── typescript/
+├── lib/                  # Utility functions
+│   ├── mdx.ts           # MDX processing
+│   ├── tutorials.ts     # Tutorial data helpers
+│   └── utils.ts         # General utilities
+└── public/              # Static assets
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ✍️ Adding Tutorials
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create a new `.mdx` file in the appropriate category folder:
+```
+content/tutorials/[category]/[slug].mdx
+```
 
-## Deploy on Vercel
+2. Add frontmatter at the top:
+```yaml
+---
+title: "Your Tutorial Title"
+description: "A brief description of your tutorial"
+date: "2026-01-20"
+author: "Your Name"
+tags: ["tag1", "tag2"]
+difficulty: "beginner" | "intermediate" | "advanced"
+featured: true | false
+---
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Write your content in MDX format with code examples!
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 Customization
+
+### Colors
+
+Modify the color palette in `tailwind.config.js` or use Tailwind's built-in colors.
+
+### Categories
+
+Add new categories by creating folders in `content/tutorials/` and updating the `categoryMeta` in `components/CategoryGrid.tsx`.
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Write Tutorials** - Share your knowledge with the community
+2. **Fix Bugs** - Help improve the codebase
+3. **Improve UI/UX** - Make the site better for everyone
+4. **Documentation** - Help others understand the project
+
+### Steps to Contribute
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-tutorial`)
+3. Commit your changes (`git commit -m 'Add amazing tutorial'`)
+4. Push to the branch (`git push origin feature/amazing-tutorial`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## ⭐ Support
+
+If you find this project useful, please consider:
+- Giving it a star on GitHub ⭐
+- Sharing it with others
+- Contributing tutorials or improvements
+
+---
+
+<div align="center">
+  Made with ❤️ by the DevLearn community
+</div>

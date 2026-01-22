@@ -1,0 +1,218 @@
+---
+title: "Tailwind CSS Fundamentals: A Complete Guide"
+description: "Learn Tailwind CSS from scratch. Master utility-first CSS and build beautiful interfaces quickly with practical examples."
+date: "2026-01-10"
+author: "DevLearn Team"
+tags: ["tailwind", "css", "styling", "responsive"]
+difficulty: "beginner"
+featured: true
+---
+
+Tailwind CSS is a utility-first CSS framework that lets you build modern designs directly in your markup. Let's learn how to use it effectively!
+
+## What is Utility-First CSS?
+
+Instead of writing custom CSS, you apply pre-built utility classes directly to elements:
+
+```html
+<!-- Traditional CSS -->
+<div class="card">
+  <h1 class="title">Hello</h1>
+</div>
+
+<!-- Tailwind CSS -->
+<div class="p-6 bg-white rounded-xl shadow-lg">
+  <h1 class="text-2xl font-bold text-gray-900">Hello</h1>
+</div>
+```
+
+## Core Concepts
+
+### Spacing
+
+Tailwind uses a consistent spacing scale. The number represents the multiple of 0.25rem (4px):
+
+```html
+<div class="p-4">Padding: 1rem (16px)</div>
+<div class="m-8">Margin: 2rem (32px)</div>
+<div class="px-6 py-3">Horizontal: 1.5rem, Vertical: 0.75rem</div>
+<div class="mt-2 mb-4">Margin top: 0.5rem, bottom: 1rem</div>
+```
+
+### Colors
+
+Tailwind includes a beautiful color palette with shades from 50 to 950:
+
+```html
+<p class="text-blue-500">Blue text</p>
+<div class="bg-gray-100">Light gray background</div>
+<button class="bg-green-600 hover:bg-green-700">
+  Green button
+</button>
+```
+
+### Typography
+
+Control text styling with simple classes:
+
+```html
+<h1 class="text-4xl font-bold">Large Bold Heading</h1>
+<p class="text-lg text-gray-600 leading-relaxed">
+  Paragraph with larger text, gray color, and relaxed line height.
+</p>
+<span class="text-sm font-medium uppercase tracking-wide">
+  Small caps with letter spacing
+</span>
+```
+
+## Flexbox and Grid
+
+### Flexbox
+
+```html
+<!-- Horizontal center -->
+<div class="flex items-center justify-center">
+  Centered content
+</div>
+
+<!-- Space between items -->
+<div class="flex justify-between">
+  <span>Left</span>
+  <span>Right</span>
+</div>
+
+<!-- Vertical stack -->
+<div class="flex flex-col gap-4">
+  <div>Item 1</div>
+  <div>Item 2</div>
+</div>
+```
+
+### Grid
+
+```html
+<!-- 3 column grid -->
+<div class="grid grid-cols-3 gap-4">
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+</div>
+
+<!-- Responsive grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  <div>Card 1</div>
+  <div>Card 2</div>
+  <div>Card 3</div>
+  <div>Card 4</div>
+</div>
+```
+
+## Responsive Design
+
+Tailwind uses mobile-first breakpoints. Prefix utilities with breakpoint names:
+
+```html
+<div class="
+  w-full        /* Mobile: full width */
+  md:w-1/2      /* Tablet: half width */
+  lg:w-1/3      /* Desktop: third width */
+">
+  Responsive width
+</div>
+
+<p class="
+  text-sm       /* Mobile: small text */
+  md:text-base  /* Tablet: normal text */
+  lg:text-lg    /* Desktop: large text */
+">
+  Responsive text
+</p>
+```
+
+Breakpoints:
+- `sm`: 640px
+- `md`: 768px
+- `lg`: 1024px
+- `xl`: 1280px
+- `2xl`: 1536px
+
+## Hover, Focus, and Other States
+
+Apply styles on different states with prefixes:
+
+```html
+<button class="
+  bg-blue-500 
+  hover:bg-blue-600
+  focus:ring-2 
+  focus:ring-blue-300
+  active:bg-blue-700
+  disabled:opacity-50
+  disabled:cursor-not-allowed
+">
+  Interactive Button
+</button>
+
+<input class="
+  border-gray-300
+  focus:border-blue-500
+  focus:ring-1
+  focus:ring-blue-500
+" />
+```
+
+## Dark Mode
+
+Tailwind supports dark mode with the `dark:` prefix:
+
+```html
+<div class="bg-white dark:bg-gray-900">
+  <h1 class="text-gray-900 dark:text-white">
+    Adapts to dark mode
+  </h1>
+  <p class="text-gray-600 dark:text-gray-400">
+    Automatically adjusts
+  </p>
+</div>
+```
+
+## Building a Card Component
+
+Let's put it all together:
+
+```html
+<div class="max-w-sm mx-auto">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+    <img 
+      src="/image.jpg" 
+      alt="Card image"
+      class="w-full h-48 object-cover"
+    />
+    <div class="p-6">
+      <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+        Category
+      </span>
+      <h3 class="mt-2 text-xl font-bold text-gray-900 dark:text-white">
+        Card Title
+      </h3>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">
+        This is a description of the card content.
+      </p>
+      <button class="mt-4 w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+        Learn More
+      </button>
+    </div>
+  </div>
+</div>
+```
+
+## Tips and Best Practices
+
+1. **Use @apply sparingly** - Extract components instead of creating utility classes
+2. **Leverage the config** - Customize colors, fonts, and spacing in tailwind.config.js
+3. **Use arbitrary values** - `w-[123px]` for one-off values
+4. **Group related utilities** - Keep related classes together for readability
+
+## Conclusion
+
+Tailwind CSS speeds up development by letting you style directly in your markup. With practice, you'll build beautiful interfaces faster than ever!

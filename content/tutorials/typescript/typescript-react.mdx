@@ -1,0 +1,299 @@
+---
+title: "TypeScript for React Developers"
+description: "Learn how to use TypeScript with React. Master typing components, props, hooks, and events for safer, more maintainable code."
+date: "2026-01-08"
+author: "DevLearn Team"
+tags: ["typescript", "react", "types", "generics"]
+difficulty: "intermediate"
+---
+
+TypeScript adds type safety to your React applications. Let's learn how to type your components effectively!
+
+## Why TypeScript with React?
+
+- **Catch errors early** - Find bugs at compile time
+- **Better autocomplete** - IDE knows your types
+- **Self-documenting** - Types describe your code
+- **Refactor safely** - Types help find all usages
+
+## Typing Component Props
+
+### Basic Props
+
+```tsx
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean; // Optional prop
+}
+
+function Button({ label, onClick, disabled = false }: ButtonProps) {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {label}
+    </button>
+  );
+}
+```
+
+### Props with Children
+
+```tsx
+interface CardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function Card({ title, children }: CardProps) {
+  return (
+    <div className="card">
+      <h2>{title}</h2>
+      {children}
+    </div>
+  );
+}
+
+// Usage
+<Card title="Hello">
+  <p>Card content</p>
+</Card>
+```
+
+### Union Types for Variants
+
+```tsx
+interface AlertProps {
+  message: string;
+  type: "success" | "error" | "warning" | "info";
+}
+
+function Alert({ message, type }: AlertProps) {
+  const colors = {
+    success: "bg-green-100 text-green-800",
+    error: "bg-red-100 text-red-800",
+    warning: "bg-yellow-100 text-yellow-800",
+    info: "bg-blue-100 text-blue-800",
+  };
+
+  return (
+    <div className={colors[type]}>
+      {message}
+    </div>
+  );
+}
+```
+
+## Typing Hooks
+
+### useState
+
+```tsx
+// Type is inferred from initial value
+const [count, setCount] = useState(0);
+
+// Explicit type for complex state
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+const [user, setUser] = useState<User | null>(null);
+
+// Array state
+const [items, setItems] = useState<string[]>([]);
+```
+
+### useRef
+
+```tsx
+// DOM element ref
+const inputRef = useRef<HTMLInputElement>(null);
+
+// Mutable value ref
+const timerRef = useRef<number | null>(null);
+
+function handleFocus() {
+  inputRef.current?.focus();
+}
+```
+
+### useReducer
+
+```tsx
+type State = {
+  count: number;
+  loading: boolean;
+};
+
+type Action =
+  | { type: "increment" }
+  | { type: "decrement" }
+  | { type: "setLoading"; payload: boolean };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "increment":
+      return { ...state, count: state.count + 1 };
+    case "decrement":
+      return { ...state, count: state.count - 1 };
+    case "setLoading":
+      return { ...state, loading: action.payload };
+  }
+}
+
+const [state, dispatch] = useReducer(reducer, { count: 0, loading: false });
+```
+
+## Typing Events
+
+```tsx
+function Form() {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("Clicked!");
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input onChange={handleChange} />
+      <button onClick={handleClick}>Submit</button>
+    </form>
+  );
+}
+```
+
+## Generic Components
+
+Create reusable, type-safe components:
+
+```tsx
+interface ListProps<T> {
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
+}
+
+function List<T>({ items, renderItem }: ListProps<T>) {
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>{renderItem(item)}</li>
+      ))}
+    </ul>
+  );
+}
+
+// Usage with different types
+<List
+  items={["Apple", "Banana", "Cherry"]}
+  renderItem={(item) => <span>{item}</span>}
+/>
+
+<List
+  items={[{ id: 1, name: "John" }, { id: 2, name: "Jane" }]}
+  renderItem={(user) => <span>{user.name}</span>}
+/>
+```
+
+## Extending HTML Element Props
+
+```tsx
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant: "primary" | "secondary";
+}
+
+function Button({ variant, children, ...props }: ButtonProps) {
+  return (
+    <button
+      className={variant === "primary" ? "bg-blue-500" : "bg-gray-500"}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+// All button props are available
+<Button variant="primary" type="submit" disabled>
+  Submit
+</Button>
+```
+
+## Type Utilities
+
+### Partial and Required
+
+```tsx
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+// All properties optional
+type PartialUser = Partial<User>;
+
+// All properties required
+type RequiredUser = Required<User>;
+```
+
+### Pick and Omit
+
+```tsx
+// Only id and name
+type UserPreview = Pick<User, "id" | "name">;
+
+// Everything except email
+type UserWithoutEmail = Omit<User, "email">;
+```
+
+## Common Patterns
+
+### Component with forwardRef
+
+```tsx
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+}
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ label, ...props }, ref) => {
+    return (
+      <label>
+        {label}
+        <input ref={ref} {...props} />
+      </label>
+    );
+  }
+);
+```
+
+### Context with TypeScript
+
+```tsx
+interface ThemeContextType {
+  theme: "light" | "dark";
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | null>(null);
+
+function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within ThemeProvider");
+  }
+  return context;
+}
+```
+
+## Conclusion
+
+TypeScript makes your React code more robust and maintainable. Start typing your components today and enjoy the benefits of static type checking!

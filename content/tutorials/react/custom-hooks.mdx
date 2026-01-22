@@ -1,0 +1,251 @@
+---
+title: "Custom Hooks: Building Reusable Logic"
+description: "Learn how to create custom React hooks to share logic between components. Includes practical examples and patterns."
+date: "2026-01-12"
+author: "DevLearn Team"
+tags: ["react", "hooks", "custom-hooks", "patterns"]
+difficulty: "intermediate"
+---
+
+Custom hooks are a powerful way to extract and reuse stateful logic across components. Let's learn how to build them!
+
+## What is a Custom Hook?
+
+A custom hook is a JavaScript function that starts with "use" and can call other hooks. It lets you extract component logic into reusable functions.
+
+```tsx
+// A simple custom hook
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return width;
+}
+```
+
+## useLocalStorage Hook
+
+Store and sync state with localStorage:
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}
+
+// Usage
+function App() {
+  const [theme, setTheme] = useLocalStorage("theme", "light");
+  
+  return (
+    <button onClick={() => setTheme(t => t === "light" ? "dark" : "light")}>
+      Theme: {theme}
+    </button>
+  );
+}
+```
+
+## useFetch Hook
+
+A hook for data fetching with loading and error states:
+
+```tsx
+import { useState, useEffect } from "react";
+
+interface UseFetchResult<T> {
+  data: T | null;
+  loading: boolean;
+  error: Error | null;
+  refetch: () => void;
+}
+
+function useFetch<T>(url: string): UseFetchResult<T> {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Request failed");
+      const json = await response.json();
+      setData(json);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Unknown error"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [url]);
+
+  return { data, loading, error, refetch: fetchData };
+}
+
+// Usage
+function UserList() {
+  const { data: users, loading, error } = useFetch<User[]>("/api/users");
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  return (
+    <ul>
+      {users?.map(user => <li key={user.id}>{user.name}</li>)}
+    </ul>
+  );
+}
+```
+
+## useDebounce Hook
+
+Debounce rapidly changing values:
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// Usage for search
+function SearchInput() {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 500);
+
+  useEffect(() => {
+    if (debouncedQuery) {
+      // Fetch search results
+      searchAPI(debouncedQuery);
+    }
+  }, [debouncedQuery]);
+
+  return (
+    <input
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      placeholder="Search..."
+    />
+  );
+}
+```
+
+## useToggle Hook
+
+Simple boolean toggle:
+
+```tsx
+import { useState, useCallback } from "react";
+
+function useToggle(initialValue = false) {
+  const [value, setValue] = useState(initialValue);
+
+  const toggle = useCallback(() => {
+    setValue(v => !v);
+  }, []);
+
+  const setTrue = useCallback(() => setValue(true), []);
+  const setFalse = useCallback(() => setValue(false), []);
+
+  return { value, toggle, setTrue, setFalse };
+}
+
+// Usage
+function Modal() {
+  const { value: isOpen, toggle, setFalse: close } = useToggle();
+
+  return (
+    <>
+      <button onClick={toggle}>Open Modal</button>
+      {isOpen && (
+        <div className="modal">
+          <p>Modal Content</p>
+          <button onClick={close}>Close</button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+## useMediaQuery Hook
+
+Respond to media queries:
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    setMatches(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, [query]);
+
+  return matches;
+}
+
+// Usage
+function ResponsiveComponent() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
+
+  return (
+    <div>
+      <p>Device: {isMobile ? "Mobile" : "Desktop"}</p>
+      <p>Theme preference: {prefersDark ? "Dark" : "Light"}</p>
+    </div>
+  );
+}
+```
+
+## Rules for Custom Hooks
+
+1. **Start with "use"** - Helps React identify it as a hook
+2. **Call hooks at the top level** - Not in loops or conditions
+3. **Only call from React functions** - Components or other hooks
+4. **Share logic, not state** - Each component using a hook gets its own state
+
+## Conclusion
+
+Custom hooks are a fantastic way to keep your components clean and your logic reusable. Start identifying repeated patterns in your code and extract them into hooks!
