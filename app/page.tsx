@@ -29,21 +29,21 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-linear-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-950 py-20 sm:py-32">
+      <section className="relative overflow-hidden bg-linear-to-b from-blue-50/50 to-[var(--background)] dark:from-blue-950/20 py-20 sm:py-32">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-sm font-medium mb-8">
               <Sparkles className="w-4 h-4" />
               Open-source learning platform
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[var(--foreground)] mb-6 leading-tight">
               Learn Modern{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">
                 Web Development
               </span>
             </h1>
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-[var(--foreground-muted)] mb-10 max-w-2xl mx-auto">
               Free, high-quality tutorials covering Next.js, React, Tailwind
               CSS, TypeScript, and more. Built by developers, for developers.
             </p>
@@ -57,7 +57,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/categories"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--card-bg)] border border-[var(--border)] text-[var(--foreground)] font-medium hover:bg-[var(--surface-hover)] transition-colors"
               >
                 Explore Categories
               </Link>
@@ -82,13 +82,13 @@ export default function Home() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700"
+                className="flex flex-col items-center p-6 bg-[var(--card-bg)] rounded-2xl border border-[var(--border)] shadow-[var(--card-shadow)] transition-shadow hover:shadow-[var(--card-shadow-hover)]"
               >
-                <stat.icon className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-3" />
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                <stat.icon className="w-8 h-8 text-[var(--accent-primary)] mb-3" />
+                <span className="text-2xl font-bold text-[var(--foreground)]">
                   {stat.value}
                 </span>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm text-[var(--foreground-muted)]">
                   {stat.label}
                 </span>
               </div>
@@ -99,20 +99,20 @@ export default function Home() {
 
       {/* Featured Tutorials */}
       {featuredTutorials.length > 0 && (
-        <section className="py-20 bg-gray-50 dark:bg-gray-900/50">
+        <section className="py-20 bg-[var(--background-secondary)]">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-10">
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h2 className="text-3xl font-bold text-[var(--foreground)] mb-2">
                   Featured Tutorials
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-[var(--foreground-muted)]">
                   Hand-picked tutorials to get you started
                 </p>
               </div>
               <Link
                 href="/tutorials"
-                className="hidden sm:flex items-center gap-1 text-blue-600 dark:text-blue-400 font-medium hover:underline"
+                className="hidden sm:flex items-center gap-1 text-[var(--accent-primary)] font-medium hover:underline"
               >
                 View all <ArrowRight className="w-4 h-4" />
               </Link>
@@ -135,10 +135,10 @@ export default function Home() {
         <section className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-3xl font-bold text-[var(--foreground)] mb-4">
                 Explore by Category
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-[var(--foreground-muted)] max-w-2xl mx-auto">
                 Find tutorials organized by technology. From frontend frameworks
                 to backend tools, we&apos;ve got you covered.
               </p>
@@ -150,20 +150,20 @@ export default function Home() {
 
       {/* Recent Tutorials */}
       {recentTutorials.length > 0 && (
-        <section className="py-20 bg-gray-50 dark:bg-gray-900/50">
+        <section className="py-20 bg-[var(--background-secondary)]">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-10">
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h2 className="text-3xl font-bold text-[var(--foreground)] mb-2">
                   Latest Tutorials
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-[var(--foreground-muted)]">
                   Fresh content to keep you learning
                 </p>
               </div>
               <Link
                 href="/tutorials"
-                className="hidden sm:flex items-center gap-1 text-blue-600 dark:text-blue-400 font-medium hover:underline"
+                className="hidden sm:flex items-center gap-1 text-[var(--accent-primary)] font-medium hover:underline"
               >
                 View all <ArrowRight className="w-4 h-4" />
               </Link>
@@ -214,11 +214,11 @@ export default function Home() {
         <section className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-6" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              <BookOpen className="w-16 h-16 text-[var(--foreground-muted)] mx-auto mb-6" />
+              <h2 className="text-2xl font-bold text-[var(--foreground)] mb-4">
                 Tutorials Coming Soon
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+              <p className="text-[var(--foreground-muted)] max-w-md mx-auto">
                 We&apos;re working on creating amazing tutorials. Check back
                 soon or contribute your own!
               </p>

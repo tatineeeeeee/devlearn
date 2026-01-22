@@ -1,0 +1,461 @@
+---
+title: "Type Guards and Type Narrowing in TypeScript"
+description: "Learn how to use type guards, discriminated unions, and type narrowing to write safer TypeScript code."
+author: "DevLearn Team"
+date: "2026-01-14"
+difficulty: "intermediate"
+tags: ["typescript", "type-guards", "narrowing", "safety"]
+readingTime: "11 min read"
+---
+
+# Type Guards and Type Narrowing in TypeScript
+
+Type narrowing allows TypeScript to understand more specific types within code blocks. Master these techniques to write safer, more expressive code.
+
+## What is Type Narrowing?
+
+TypeScript analyzes your code flow to narrow types:
+
+```typescript
+function printValue(value: string | number) {
+  // value is string | number here
+
+  if (typeof value === "string") {
+    // value is narrowed to string
+    console.log(value.toUpperCase());
+  } else {
+    // value is narrowed to number
+    console.log(value.toFixed(2));
+  }
+}
+```
+
+## Built-in Type Guards
+
+### typeof Guard
+
+Works with primitive types:
+
+```typescript
+function processValue(value: string | number | boolean) {
+  if (typeof value === "string") {
+    return value.trim();
+  }
+  if (typeof value === "number") {
+    return value * 2;
+  }
+  return !value; // boolean
+}
+```
+
+### instanceof Guard
+
+Works with class instances:
+
+```typescript
+class Dog {
+  bark() {
+    console.log("Woof!");
+  }
+}
+
+class Cat {
+  meow() {
+    console.log("Meow!");
+  }
+}
+
+function makeSound(animal: Dog | Cat) {
+  if (animal instanceof Dog) {
+    animal.bark(); // TypeScript knows it's a Dog
+  } else {
+    animal.meow(); // TypeScript knows it's a Cat
+  }
+}
+```
+
+### in Operator
+
+Check if a property exists:
+
+```typescript
+interface Bird {
+  fly(): void;
+  layEggs(): void;
+}
+
+interface Fish {
+  swim(): void;
+  layEggs(): void;
+}
+
+function move(animal: Bird | Fish) {
+  if ("fly" in animal) {
+    animal.fly(); // Bird
+  } else {
+    animal.swim(); // Fish
+  }
+}
+```
+
+## Discriminated Unions
+
+Use a common property to differentiate types:
+
+```typescript
+interface Circle {
+  kind: "circle";
+  radius: number;
+}
+
+interface Square {
+  kind: "square";
+  sideLength: number;
+}
+
+interface Rectangle {
+  kind: "rectangle";
+  width: number;
+  height: number;
+}
+
+type Shape = Circle | Square | Rectangle;
+
+function getArea(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2;
+    case "square":
+      return shape.sideLength ** 2;
+    case "rectangle":
+      return shape.width * shape.height;
+  }
+}
+```
+
+### Exhaustiveness Checking
+
+Ensure all cases are handled:
+
+```typescript
+function getArea(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2;
+    case "square":
+      return shape.sideLength ** 2;
+    case "rectangle":
+      return shape.width * shape.height;
+    default:
+      // This will error if a case is missing
+      const _exhaustive: never = shape;
+      throw new Error(`Unhandled shape: ${_exhaustive}`);
+  }
+}
+```
+
+## Custom Type Guards
+
+Create your own type predicates:
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+interface Admin extends User {
+  role: "admin";
+  permissions: string[];
+}
+
+// Type predicate function
+function isAdmin(user: User): user is Admin {
+  return "role" in user && (user as Admin).role === "admin";
+}
+
+function handleUser(user: User | Admin) {
+  if (isAdmin(user)) {
+    console.log(user.permissions); // TypeScript knows it's Admin
+  } else {
+    console.log("Regular user:", user.name);
+  }
+}
+```
+
+### Array Type Guards
+
+Filter arrays with type safety:
+
+```typescript
+interface SuccessResult {
+  success: true;
+  data: string;
+}
+
+interface ErrorResult {
+  success: false;
+  error: string;
+}
+
+type Result = SuccessResult | ErrorResult;
+
+function isSuccess(result: Result): result is SuccessResult {
+  return result.success === true;
+}
+
+const results: Result[] = [
+  { success: true, data: "Hello" },
+  { success: false, error: "Failed" },
+  { success: true, data: "World" },
+];
+
+// Filter to only successful results
+const successes = results.filter(isSuccess);
+// successes: SuccessResult[]
+
+// Map over successful data
+const data = successes.map((r) => r.data);
+// data: string[]
+```
+
+## Assertion Functions
+
+Assert that a condition is true:
+
+```typescript
+function assertIsString(value: unknown): asserts value is string {
+  if (typeof value !== "string") {
+    throw new Error("Value must be a string");
+  }
+}
+
+function processInput(input: unknown) {
+  assertIsString(input);
+  // TypeScript now knows input is a string
+  console.log(input.toUpperCase());
+}
+
+// Assert non-null
+function assertDefined<T>(value: T | null | undefined): asserts value is T {
+  if (value === null || value === undefined) {
+    throw new Error("Value must be defined");
+  }
+}
+
+function getUser(id: string) {
+  const user = users.find((u) => u.id === id);
+  assertDefined(user);
+  return user; // User, not User | undefined
+}
+```
+
+## Truthiness Narrowing
+
+TypeScript understands truthy/falsy values:
+
+```typescript
+function printName(name: string | null | undefined) {
+  if (name) {
+    // name is string (truthy)
+    console.log(name.toUpperCase());
+  } else {
+    // name is "" | null | undefined
+    console.log("No name provided");
+  }
+}
+
+// With optional chaining
+interface Config {
+  debug?: {
+    verbose?: boolean;
+  };
+}
+
+function logConfig(config: Config) {
+  if (config.debug?.verbose) {
+    console.log("Verbose mode enabled");
+  }
+}
+```
+
+## Equality Narrowing
+
+TypeScript narrows based on equality checks:
+
+```typescript
+function compare(a: string | number, b: string | boolean) {
+  if (a === b) {
+    // Both must be string (only common type)
+    console.log(a.toUpperCase());
+    console.log(b.toUpperCase());
+  }
+}
+
+// Null checks
+function processValue(value: string | null) {
+  if (value !== null) {
+    console.log(value.length); // string
+  }
+}
+```
+
+## Real-World Examples
+
+### API Response Handling
+
+```typescript
+interface ApiSuccess<T> {
+  status: "success";
+  data: T;
+}
+
+interface ApiError {
+  status: "error";
+  error: {
+    code: number;
+    message: string;
+  };
+}
+
+type ApiResponse<T> = ApiSuccess<T> | ApiError;
+
+function isApiError<T>(response: ApiResponse<T>): response is ApiError {
+  return response.status === "error";
+}
+
+async function fetchUser(id: string): Promise<User> {
+  const response: ApiResponse<User> = await fetch(`/api/users/${id}`).then(
+    (r) => r.json(),
+  );
+
+  if (isApiError(response)) {
+    throw new Error(
+      `API Error ${response.error.code}: ${response.error.message}`,
+    );
+  }
+
+  return response.data; // TypeScript knows this is User
+}
+```
+
+### Form Validation
+
+```typescript
+interface ValidationSuccess {
+  valid: true;
+  data: FormData;
+}
+
+interface ValidationError {
+  valid: false;
+  errors: Record<string, string>;
+}
+
+type ValidationResult = ValidationSuccess | ValidationError;
+
+function validateForm(form: HTMLFormElement): ValidationResult {
+  const errors: Record<string, string> = {};
+  const formData = new FormData(form);
+
+  const email = formData.get("email") as string;
+  if (!email || !email.includes("@")) {
+    errors.email = "Invalid email address";
+  }
+
+  const password = formData.get("password") as string;
+  if (!password || password.length < 8) {
+    errors.password = "Password must be at least 8 characters";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return { valid: false, errors };
+  }
+
+  return { valid: true, data: formData };
+}
+
+function handleSubmit(form: HTMLFormElement) {
+  const result = validateForm(form);
+
+  if (!result.valid) {
+    // Show errors
+    Object.entries(result.errors).forEach(([field, message]) => {
+      console.log(`${field}: ${message}`);
+    });
+    return;
+  }
+
+  // Submit form - TypeScript knows result.data exists
+  submitForm(result.data);
+}
+```
+
+### Event Handling
+
+```typescript
+interface MouseClickEvent {
+  type: "click";
+  x: number;
+  y: number;
+  button: "left" | "right" | "middle";
+}
+
+interface KeyPressEvent {
+  type: "keypress";
+  key: string;
+  modifiers: {
+    ctrl: boolean;
+    shift: boolean;
+    alt: boolean;
+  };
+}
+
+interface ScrollEvent {
+  type: "scroll";
+  scrollTop: number;
+  scrollLeft: number;
+}
+
+type AppEvent = MouseClickEvent | KeyPressEvent | ScrollEvent;
+
+function handleEvent(event: AppEvent) {
+  switch (event.type) {
+    case "click":
+      console.log(
+        `Clicked at (${event.x}, ${event.y}) with ${event.button} button`,
+      );
+      break;
+    case "keypress":
+      if (event.modifiers.ctrl && event.key === "s") {
+        console.log("Save shortcut detected");
+      }
+      break;
+    case "scroll":
+      console.log(`Scrolled to ${event.scrollTop}`);
+      break;
+  }
+}
+```
+
+## Best Practices
+
+1. **Prefer discriminated unions** - Use a common literal property
+2. **Use custom type guards** - Encapsulate complex type checks
+3. **Enable strict mode** - Get better type narrowing
+4. **Avoid type assertions** - Let TypeScript narrow naturally
+5. **Check exhaustiveness** - Handle all union cases
+
+## Summary
+
+| Technique            | Use Case             |
+| -------------------- | -------------------- |
+| `typeof`             | Primitive types      |
+| `instanceof`         | Class instances      |
+| `in` operator        | Property existence   |
+| Discriminated unions | Complex object types |
+| Custom type guards   | Reusable type checks |
+| Assertion functions  | Runtime validation   |
+
+Master type narrowing for safer, more expressive TypeScript code!

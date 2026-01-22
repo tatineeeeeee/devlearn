@@ -1,8 +1,14 @@
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle, Info, AlertTriangle } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  Info,
+  AlertTriangle,
+  Lightbulb,
+} from "lucide-react";
 
 interface CalloutProps {
-  type?: "info" | "warning" | "error" | "success";
+  type?: "info" | "warning" | "error" | "success" | "tip";
   title?: string;
   children: React.ReactNode;
 }
@@ -10,31 +16,38 @@ interface CalloutProps {
 const calloutStyles = {
   info: {
     container:
-      "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800",
+      "bg-blue-50/70 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/30",
     icon: Info,
-    iconColor: "text-blue-500",
+    iconColor: "text-blue-600 dark:text-blue-400",
     title: "text-blue-800 dark:text-blue-300",
   },
   warning: {
     container:
-      "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800",
+      "bg-amber-50/70 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30",
     icon: AlertTriangle,
-    iconColor: "text-yellow-500",
-    title: "text-yellow-800 dark:text-yellow-300",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    title: "text-amber-800 dark:text-amber-300",
   },
   error: {
     container:
-      "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800",
+      "bg-rose-50/70 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/30",
     icon: AlertCircle,
-    iconColor: "text-red-500",
-    title: "text-red-800 dark:text-red-300",
+    iconColor: "text-rose-600 dark:text-rose-400",
+    title: "text-rose-800 dark:text-rose-300",
   },
   success: {
     container:
-      "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800",
+      "bg-emerald-50/70 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30",
     icon: CheckCircle,
-    iconColor: "text-green-500",
-    title: "text-green-800 dark:text-green-300",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    title: "text-emerald-800 dark:text-emerald-300",
+  },
+  tip: {
+    container:
+      "bg-purple-50/70 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/30",
+    icon: Lightbulb,
+    iconColor: "text-purple-600 dark:text-purple-400",
+    title: "text-purple-800 dark:text-purple-300",
   },
 };
 
@@ -44,14 +57,17 @@ export function Callout({ type = "info", title, children }: CalloutProps) {
 
   return (
     <div
-      className={cn("my-6 flex gap-4 rounded-xl border p-4", styles.container)}
+      className={cn(
+        "my-6 flex gap-4 rounded-xl border p-4 backdrop-blur-sm",
+        styles.container,
+      )}
     >
       <Icon className={cn("w-6 h-6 shrink-0 mt-0.5", styles.iconColor)} />
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         {title && (
-          <h4 className={cn("font-semibold mb-1", styles.title)}>{title}</h4>
+          <h4 className={cn("font-semibold mb-1.5", styles.title)}>{title}</h4>
         )}
-        <div className="text-gray-700 dark:text-gray-300 text-sm [&>p]:m-0">
+        <div className="text-[var(--foreground-muted)] text-sm leading-relaxed [&>p]:m-0 [&>p:not(:last-child)]:mb-2">
           {children}
         </div>
       </div>

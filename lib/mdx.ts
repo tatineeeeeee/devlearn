@@ -2,15 +2,10 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypePrism from "rehype-prism-plus";
+import { mdxComponents } from "@/components/mdx-components";
 
-interface MDXComponents {
-    [key: string]: React.ComponentType<unknown>;
-}
-
-export async function compileMDXContent(
-    content: string,
-    components?: MDXComponents
-) {
+export async function compileMDXContent(content: string) {
     const { content: mdxContent } = await compileMDX({
         source: content,
         options: {
@@ -18,6 +13,7 @@ export async function compileMDXContent(
                 remarkPlugins: [remarkGfm],
                 rehypePlugins: [
                     rehypeSlug,
+                    [rehypePrism, { ignoreMissing: true }],
                     [
                         rehypeAutolinkHeadings,
                         {
@@ -30,7 +26,7 @@ export async function compileMDXContent(
                 ],
             },
         },
-        components,
+        components: mdxComponents,
     });
 
     return mdxContent;

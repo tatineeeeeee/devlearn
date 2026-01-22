@@ -1,0 +1,338 @@
+---
+title: "Authentication with Next.js Middleware"
+description: "Learn how to implement robust authentication and route protection using Next.js Middleware for secure applications."
+author: "DevLearn Team"
+date: "2026-01-18"
+difficulty: "advanced"
+tags: ["nextjs", "middleware", "authentication", "security"]
+readingTime: "15 min read"
+---
+
+# Authentication with Next.js Middleware
+
+Middleware in Next.js runs before a request is completed, making it perfect for authentication checks, redirects, and request modifications.
+
+## Understanding Middleware
+
+Middleware executes on the Edge Runtime and runs before cached content and routes are matched:
+
+```typescript
+// middleware.ts (at project root)
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+export function middleware(request: NextRequest) {
+  // Your middleware logic here
+  return NextResponse.next();
+}
+
+// Configure which routes to run middleware on
+export const config = {
+  matcher: ["/dashboard/:path*", "/api/:path*"],
+};
+```
+
+## Basic Auth Protection
+
+Protect routes by checking for authentication tokens:
+
+```typescript
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get("auth-token")?.value;
+  const isAuthPage = request.nextUrl.pathname.startsWith("/login");
+  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard");
+
+  // Redirect to login if accessing protected route without token
+  if (isProtectedRoute && !token) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Redirect to dashboard if already logged in and accessing auth pages
+  if (isAuthPage && token) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/dashboard/:path*", "/login", "/register"],
+};
+```
+
+## JWT Token Verification
+
+Verify JWT tokens in middleware for secure authentication:
+
+```typescript
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
+
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || "your-secret-key",
+);
+
+async function verifyToken(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+export async function middleware(request: NextRequest) {
+  const token = request.cookies.get("auth-token")?.value;
+
+  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    const payload = await verifyToken(token);
+    if (!payload) {
+      // Invalid token - clear it and redirect
+      const response = NextResponse.redirect(new URL("/login", request.url));
+      response.cookies.delete("auth-token");
+      return response;
+    }
+
+    // Add user info to headers for downstream use
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-user-id", payload.sub as string);
+    requestHeaders.set("x-user-role", payload.role as string);
+
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    });
+  }
+
+  return NextResponse.next();
+}
+```
+
+## Role-Based Access Control
+
+Implement RBAC to restrict access based on user roles:
+
+```typescript
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { verifyToken } from "@/lib/auth";
+
+const rolePermissions: Record<string, string[]> = {
+  admin: [
+    "/dashboard",
+    "/dashboard/users",
+    "/dashboard/settings",
+    "/dashboard/analytics",
+  ],
+  editor: ["/dashboard", "/dashboard/posts", "/dashboard/media"],
+  viewer: ["/dashboard"],
+};
+
+export async function middleware(request: NextRequest) {
+  const token = request.cookies.get("auth-token")?.value;
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith("/dashboard")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    const user = await verifyToken(token);
+    if (!user) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    // Check role permissions
+    const userRole = user.role as string;
+    const allowedPaths = rolePermissions[userRole] || [];
+
+    const hasAccess = allowedPaths.some(
+      (path) => pathname === path || pathname.startsWith(`${path}/`),
+    );
+
+    if (!hasAccess) {
+      return NextResponse.redirect(
+        new URL("/dashboard/unauthorized", request.url),
+      );
+    }
+  }
+
+  return NextResponse.next();
+}
+```
+
+## Session Refresh
+
+Automatically refresh sessions before they expire:
+
+```typescript
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { verifyToken, signToken } from "@/lib/auth";
+
+const REFRESH_THRESHOLD = 5 * 60; // 5 minutes
+
+export async function middleware(request: NextRequest) {
+  const token = request.cookies.get("auth-token")?.value;
+
+  if (token && request.nextUrl.pathname.startsWith("/dashboard")) {
+    const payload = await verifyToken(token);
+
+    if (payload) {
+      const exp = payload.exp as number;
+      const now = Math.floor(Date.now() / 1000);
+
+      // Refresh token if expiring soon
+      if (exp - now < REFRESH_THRESHOLD) {
+        const newToken = await signToken({
+          sub: payload.sub,
+          role: payload.role,
+          email: payload.email,
+        });
+
+        const response = NextResponse.next();
+        response.cookies.set("auth-token", newToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24, // 24 hours
+        });
+
+        return response;
+      }
+    }
+  }
+
+  return NextResponse.next();
+}
+```
+
+## Rate Limiting
+
+Protect your API routes with rate limiting:
+
+```typescript
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+const rateLimit = new Map<string, { count: number; timestamp: number }>();
+const WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_REQUESTS = 100;
+
+function getRateLimitKey(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const ip = forwarded ? forwarded.split(",")[0] : "unknown";
+  return `${ip}:${request.nextUrl.pathname}`;
+}
+
+export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/api")) {
+    const key = getRateLimitKey(request);
+    const now = Date.now();
+    const windowData = rateLimit.get(key);
+
+    if (!windowData || now - windowData.timestamp > WINDOW_MS) {
+      rateLimit.set(key, { count: 1, timestamp: now });
+    } else if (windowData.count >= MAX_REQUESTS) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    } else {
+      windowData.count++;
+    }
+  }
+
+  return NextResponse.next();
+}
+```
+
+## Complete Authentication Flow
+
+Here's a complete example combining all concepts:
+
+```typescript
+// lib/auth.ts
+import { SignJWT, jwtVerify } from "jose";
+
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
+export async function signToken(payload: Record<string, unknown>) {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime("24h")
+    .sign(secret);
+}
+
+export async function verifyToken(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
+  } catch {
+    return null;
+  }
+}
+```
+
+```typescript
+// app/api/auth/login/route.ts
+import { NextResponse } from "next/server";
+import { signToken } from "@/lib/auth";
+import { validateCredentials } from "@/lib/users";
+
+export async function POST(request: Request) {
+  const { email, password } = await request.json();
+
+  const user = await validateCredentials(email, password);
+  if (!user) {
+    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+  }
+
+  const token = await signToken({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+  });
+
+  const response = NextResponse.json({ success: true });
+  response.cookies.set("auth-token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24,
+  });
+
+  return response;
+}
+```
+
+## Best Practices
+
+1. **Keep middleware lightweight** - It runs on every matched request
+2. **Use Edge-compatible libraries** - Not all Node.js APIs are available
+3. **Implement proper error handling** - Gracefully handle token verification failures
+4. **Use secure cookie settings** - Always set `httpOnly` and `secure` flags
+5. **Consider session refresh** - Improve UX by refreshing tokens automatically
+
+## Summary
+
+Next.js Middleware provides a powerful way to handle authentication:
+
+- Runs before requests reach your routes
+- Perfect for route protection and redirects
+- Supports JWT verification at the edge
+- Enables role-based access control
+- Can implement rate limiting and session management
+
+Master these patterns to build secure, production-ready applications!

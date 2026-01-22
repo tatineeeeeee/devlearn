@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Header, Footer } from "@/components";
+import { Header, Footer, BackToTop, WebsiteSchema } from "@/components";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,6 +31,7 @@ export const metadata: Metadata = {
     "Programming",
   ],
   authors: [{ name: "DevLearn Team" }],
+  metadataBase: new URL("https://devlearn.dev"),
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -59,13 +60,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <WebsiteSchema />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="flex min-h-screen flex-col">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-[var(--accent-primary)] focus:text-white"
+          >
+            Skip to main content
+          </a>
           <Header />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
           <Footer />
+          <BackToTop />
         </div>
       </body>
     </html>

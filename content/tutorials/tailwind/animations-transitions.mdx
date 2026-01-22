@@ -1,0 +1,380 @@
+---
+title: "Animations & Transitions in Tailwind CSS"
+description: "Create smooth animations, transitions, and micro-interactions using Tailwind CSS utilities and custom keyframes."
+author: "DevLearn Team"
+date: "2026-01-16"
+difficulty: "intermediate"
+tags: ["tailwind", "animations", "css", "transitions", "motion"]
+readingTime: "12 min read"
+---
+
+# Animations & Transitions in Tailwind CSS
+
+Add life to your UI with smooth animations and transitions. Learn how to use Tailwind's built-in utilities and create custom animations.
+
+## Basic Transitions
+
+Tailwind provides transition utilities for smooth property changes:
+
+```tsx
+// Transition all properties
+<button className="bg-blue-500 hover:bg-blue-600 transition-all duration-300">
+  Hover me
+</button>
+
+// Transition specific properties
+<div className="transition-colors duration-200 hover:bg-gray-100">
+  Color transition only
+</div>
+
+// Transition with delay
+<div className="transition-transform duration-500 delay-100 hover:scale-105">
+  Delayed scale
+</div>
+```
+
+## Transition Properties
+
+| Class                  | Properties     |
+| ---------------------- | -------------- |
+| `transition-none`      | No transition  |
+| `transition-all`       | All properties |
+| `transition-colors`    | Colors only    |
+| `transition-opacity`   | Opacity only   |
+| `transition-shadow`    | Box shadow     |
+| `transition-transform` | Transform      |
+
+## Timing Functions
+
+Control the animation curve:
+
+```tsx
+<div className="transition ease-linear">Linear</div>
+<div className="transition ease-in">Ease In</div>
+<div className="transition ease-out">Ease Out</div>
+<div className="transition ease-in-out">Ease In Out</div>
+```
+
+## Built-in Animations
+
+Tailwind includes useful animations:
+
+```tsx
+// Spin animation (loading spinners)
+<svg className="animate-spin h-5 w-5 text-blue-500">
+  {/* spinner icon */}
+</svg>
+
+// Ping animation (notifications)
+<span className="relative flex h-3 w-3">
+  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+  <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+</span>
+
+// Pulse animation (skeletons)
+<div className="animate-pulse bg-gray-200 h-4 w-full rounded"></div>
+
+// Bounce animation (scroll indicator)
+<div className="animate-bounce">↓</div>
+```
+
+## Interactive Button Examples
+
+```tsx
+export function AnimatedButtons() {
+  return (
+    <div className="space-y-4">
+      {/* Scale on hover */}
+      <button className="px-6 py-3 bg-blue-500 text-white rounded-lg transform transition hover:scale-105 active:scale-95">
+        Scale Effect
+      </button>
+
+      {/* Lift on hover */}
+      <button className="px-6 py-3 bg-purple-500 text-white rounded-lg shadow-md transition-all hover:shadow-xl hover:-translate-y-1">
+        Lift Effect
+      </button>
+
+      {/* Glow on hover */}
+      <button className="px-6 py-3 bg-pink-500 text-white rounded-lg transition-shadow hover:shadow-[0_0_20px_rgba(236,72,153,0.5)]">
+        Glow Effect
+      </button>
+
+      {/* Border animation */}
+      <button className="px-6 py-3 border-2 border-green-500 text-green-500 rounded-lg transition-all hover:bg-green-500 hover:text-white">
+        Fill Effect
+      </button>
+    </div>
+  );
+}
+```
+
+## Card Hover Effects
+
+```tsx
+export function AnimatedCard() {
+  return (
+    <div className="group relative overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+      {/* Image with zoom effect */}
+      <div className="overflow-hidden">
+        <img
+          src="/card-image.jpg"
+          alt="Card"
+          className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+      </div>
+
+      {/* Overlay that appears on hover */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+      {/* Content that slides up */}
+      <div className="p-6">
+        <h3 className="text-xl font-bold">Card Title</h3>
+        <p className="mt-2 text-gray-600">Card description goes here.</p>
+
+        {/* Button that appears on hover */}
+        <button className="mt-4 opacity-0 translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 px-4 py-2 bg-blue-500 text-white rounded-lg">
+          Learn More
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## Loading Skeletons
+
+```tsx
+export function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      {/* Image skeleton */}
+      <div className="animate-pulse bg-gray-200 h-48 w-full" />
+
+      <div className="p-6 space-y-4">
+        {/* Title skeleton */}
+        <div className="animate-pulse bg-gray-200 h-6 w-3/4 rounded" />
+
+        {/* Description skeleton */}
+        <div className="space-y-2">
+          <div className="animate-pulse bg-gray-200 h-4 w-full rounded" />
+          <div className="animate-pulse bg-gray-200 h-4 w-5/6 rounded" />
+        </div>
+
+        {/* Button skeleton */}
+        <div className="animate-pulse bg-gray-200 h-10 w-28 rounded-lg" />
+      </div>
+    </div>
+  );
+}
+```
+
+## Custom Keyframe Animations
+
+Add custom animations in your CSS:
+
+```css
+/* globals.css */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+```
+
+Use in components:
+
+```tsx
+<div className="animate-fade-in">Fades in on mount</div>
+<div className="animate-slide-in-right">Slides from right</div>
+<input className="animate-shake" /> {/* For error states */}
+```
+
+## Staggered Animations
+
+Animate list items with delays:
+
+```tsx
+export function StaggeredList() {
+  const items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
+
+  return (
+    <ul className="space-y-2">
+      {items.map((item, index) => (
+        <li
+          key={item}
+          className="opacity-0 animate-fade-in p-4 bg-white rounded-lg shadow"
+          style={{
+            animationDelay: `${index * 100}ms`,
+            animationFillMode: "forwards",
+          }}
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Modal Animation
+
+```tsx
+export function Modal({ isOpen, onClose, children }: ModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50">
+      {/* Backdrop with fade */}
+      <div
+        className="fixed inset-0 bg-black/50 transition-opacity duration-300"
+        onClick={onClose}
+      />
+
+      {/* Modal with scale and fade */}
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all duration-300 animate-[fade-in_0.3s_ease-out] scale-100">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Scroll-Triggered Animations
+
+Use Intersection Observer for scroll animations:
+
+```tsx
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+export function ScrollReveal({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+```
+
+## Toggle Animation
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+export function AnimatedToggle() {
+  const [enabled, setEnabled] = useState(false);
+
+  return (
+    <button
+      onClick={() => setEnabled(!enabled)}
+      className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
+        enabled ? "bg-blue-500" : "bg-gray-300"
+      }`}
+    >
+      <span
+        className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow transition-transform duration-300 ${
+          enabled ? "translate-x-6" : "translate-x-0"
+        }`}
+      />
+    </button>
+  );
+}
+```
+
+## Performance Tips
+
+1. **Use `transform` and `opacity`** - They're GPU-accelerated
+2. **Avoid animating `width`/`height`** - Use `scale` instead
+3. **Use `will-change` sparingly** - Only for complex animations
+4. **Respect motion preferences** - Use `motion-reduce` variant
+
+```tsx
+// Respect user's motion preferences
+<div className="animate-bounce motion-reduce:animate-none">
+  Bouncing (unless user prefers reduced motion)
+</div>
+```
+
+## Summary
+
+| Animation Type   | Tailwind Classes                                  |
+| ---------------- | ------------------------------------------------- |
+| Transitions      | `transition-all duration-300 ease-in-out`         |
+| Hover effects    | `hover:scale-105 hover:shadow-lg`                 |
+| Built-in         | `animate-spin`, `animate-pulse`, `animate-bounce` |
+| Custom           | Define keyframes in CSS                           |
+| Scroll-triggered | Use Intersection Observer                         |
+
+Add polish to your UI with thoughtful animations!

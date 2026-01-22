@@ -1,0 +1,431 @@
+---
+title: "Advanced TypeScript Generics"
+description: "Master TypeScript generics with practical examples including constraints, conditional types, mapped types, and utility patterns."
+author: "DevLearn Team"
+date: "2026-01-22"
+difficulty: "advanced"
+tags: ["typescript", "generics", "types", "advanced"]
+readingTime: "16 min read"
+---
+
+# Advanced TypeScript Generics
+
+Generics are one of TypeScript's most powerful features. They enable you to write flexible, reusable code while maintaining type safety.
+
+## Generic Basics
+
+A generic creates a placeholder for a type:
+
+```typescript
+// Without generics - loses type information
+function identity(arg: any): any {
+  return arg;
+}
+
+// With generics - preserves type information
+function identity<T>(arg: T): T {
+  return arg;
+}
+
+const num = identity<number>(42); // num: number
+const str = identity("hello"); // str: string (inferred)
+```
+
+## Generic Constraints
+
+Restrict what types can be used with `extends`:
+
+```typescript
+// Constraint: T must have a length property
+interface Lengthwise {
+  length: number;
+}
+
+function logLength<T extends Lengthwise>(arg: T): T {
+  console.log(arg.length);
+  return arg;
+}
+
+logLength("hello"); // ✅ strings have length
+logLength([1, 2, 3]); // ✅ arrays have length
+logLength({ length: 10 }); // ✅ object with length
+logLength(123); // ❌ Error: number has no length
+```
+
+## Multiple Type Parameters
+
+Use multiple generics for complex relationships:
+
+```typescript
+function map<T, U>(array: T[], fn: (item: T) => U): U[] {
+  return array.map(fn);
+}
+
+const numbers = [1, 2, 3];
+const strings = map(numbers, (n) => n.toString());
+// strings: string[]
+
+// Key-value pair example
+function pair<K, V>(key: K, value: V): [K, V] {
+  return [key, value];
+}
+
+const result = pair("age", 25); // [string, number]
+```
+
+## Generic Interfaces and Types
+
+```typescript
+// Generic interface
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message: string;
+  timestamp: Date;
+}
+
+// Usage
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+type UserResponse = ApiResponse<User>;
+type UsersResponse = ApiResponse<User[]>;
+
+// Generic type alias
+type Nullable<T> = T | null;
+type AsyncResult<T> = Promise<T> | T;
+
+const user: Nullable<User> = null;
+```
+
+## Generic Classes
+
+```typescript
+class Stack<T> {
+  private items: T[] = [];
+
+  push(item: T): void {
+    this.items.push(item);
+  }
+
+  pop(): T | undefined {
+    return this.items.pop();
+  }
+
+  peek(): T | undefined {
+    return this.items[this.items.length - 1];
+  }
+
+  isEmpty(): boolean {
+    return this.items.length === 0;
+  }
+}
+
+const numberStack = new Stack<number>();
+numberStack.push(1);
+numberStack.push(2);
+const num = numberStack.pop(); // num: number | undefined
+
+const stringStack = new Stack<string>();
+stringStack.push("hello");
+```
+
+## Conditional Types
+
+Types that depend on a condition:
+
+```typescript
+// Basic conditional type
+type IsString<T> = T extends string ? true : false;
+
+type A = IsString<string>; // true
+type B = IsString<number>; // false
+
+// Extracting types
+type ExtractArrayType<T> = T extends (infer U)[] ? U : never;
+
+type StringFromArray = ExtractArrayType<string[]>; // string
+type NumberFromArray = ExtractArrayType<number[]>; // number
+type NeverType = ExtractArrayType<string>; // never
+
+// Function return type extraction
+type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
+
+function getUser() {
+  return { id: 1, name: "John" };
+}
+
+type UserType = ReturnType<typeof getUser>; // { id: number; name: string }
+```
+
+## Mapped Types
+
+Transform existing types:
+
+```typescript
+// Make all properties optional
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
+
+// Make all properties required
+type Required<T> = {
+  [P in keyof T]-?: T[P];
+};
+
+// Make all properties readonly
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P];
+};
+
+// Pick specific properties
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P];
+};
+
+// Example usage
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+}
+
+type PartialUser = Partial<User>;
+// { id?: number; name?: string; email?: string; age?: number }
+
+type UserPreview = Pick<User, "id" | "name">;
+// { id: number; name: string }
+```
+
+## Custom Utility Types
+
+Create your own utility types:
+
+```typescript
+// Make specific properties optional
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+interface CreateUserInput {
+  name: string;
+  email: string;
+  age: number;
+}
+
+type CreateUserOptionalAge = PartialBy<CreateUserInput, "age">;
+// { name: string; email: string; age?: number }
+
+// Deep partial (recursive)
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+interface Config {
+  database: {
+    host: string;
+    port: number;
+    credentials: {
+      username: string;
+      password: string;
+    };
+  };
+}
+
+type PartialConfig = DeepPartial<Config>;
+// All nested properties are now optional
+
+// Non-nullable properties only
+type NonNullableProperties<T> = {
+  [P in keyof T]: NonNullable<T[P]>;
+};
+```
+
+## Template Literal Types
+
+Powerful string type manipulation:
+
+```typescript
+// Basic template literal
+type Greeting = `Hello, ${string}!`;
+const greeting: Greeting = "Hello, World!"; // ✅
+
+// Combining with unions
+type Color = "red" | "green" | "blue";
+type Size = "small" | "medium" | "large";
+
+type ColorSize = `${Color}-${Size}`;
+// "red-small" | "red-medium" | "red-large" | "green-small" | ...
+
+// Event handler names
+type EventName = "click" | "focus" | "blur";
+type HandlerName = `on${Capitalize<EventName>}`;
+// "onClick" | "onFocus" | "onBlur"
+
+// CSS properties
+type CSSProperty = "margin" | "padding";
+type CSSDirection = "top" | "right" | "bottom" | "left";
+type CSSSpacing = `${CSSProperty}-${CSSDirection}`;
+// "margin-top" | "margin-right" | ... | "padding-left"
+```
+
+## Generic Function Overloads
+
+```typescript
+// Overloads with generics
+function createElement<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+): HTMLElementTagNameMap[K];
+function createElement(tag: string): HTMLElement;
+function createElement(tag: string): HTMLElement {
+  return document.createElement(tag);
+}
+
+const div = createElement("div"); // HTMLDivElement
+const span = createElement("span"); // HTMLSpanElement
+const custom = createElement("my-element"); // HTMLElement
+```
+
+## Real-World Examples
+
+### Type-Safe Event Emitter
+
+```typescript
+type EventMap = {
+  userLogin: { userId: string; timestamp: Date };
+  userLogout: { userId: string };
+  error: { message: string; code: number };
+};
+
+class TypedEventEmitter<T extends Record<string, any>> {
+  private listeners: {
+    [K in keyof T]?: Array<(data: T[K]) => void>;
+  } = {};
+
+  on<K extends keyof T>(event: K, listener: (data: T[K]) => void): void {
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
+    }
+    this.listeners[event]!.push(listener);
+  }
+
+  emit<K extends keyof T>(event: K, data: T[K]): void {
+    this.listeners[event]?.forEach((listener) => listener(data));
+  }
+}
+
+const emitter = new TypedEventEmitter<EventMap>();
+
+emitter.on("userLogin", (data) => {
+  console.log(data.userId); // ✅ TypeScript knows the shape
+  console.log(data.timestamp); // ✅
+});
+
+emitter.emit("userLogin", {
+  userId: "123",
+  timestamp: new Date(),
+});
+```
+
+### Type-Safe API Client
+
+```typescript
+interface APIEndpoints {
+  "/users": {
+    GET: { response: User[] };
+    POST: { body: CreateUserInput; response: User };
+  };
+  "/users/:id": {
+    GET: { response: User };
+    PUT: { body: UpdateUserInput; response: User };
+    DELETE: { response: void };
+  };
+}
+
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+
+async function apiRequest<
+  E extends keyof APIEndpoints,
+  M extends keyof APIEndpoints[E] & HttpMethod,
+>(
+  endpoint: E,
+  method: M,
+  body?: APIEndpoints[E][M] extends { body: infer B } ? B : never,
+): Promise<APIEndpoints[E][M] extends { response: infer R } ? R : never> {
+  const response = await fetch(endpoint as string, {
+    method,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  return response.json();
+}
+
+// Usage - fully typed!
+const users = await apiRequest("/users", "GET"); // User[]
+const newUser = await apiRequest("/users", "POST", {
+  // User
+  name: "John",
+  email: "john@example.com",
+});
+```
+
+### Form Builder
+
+```typescript
+type FieldType = "text" | "number" | "email" | "select";
+
+interface FieldConfig<T extends FieldType> {
+  type: T;
+  label: string;
+  required?: boolean;
+  options?: T extends "select" ? string[] : never;
+  min?: T extends "number" ? number : never;
+  max?: T extends "number" ? number : never;
+}
+
+function createField<T extends FieldType>(config: FieldConfig<T>) {
+  return config;
+}
+
+// TypeScript enforces correct options for each type
+const textField = createField({
+  type: "text",
+  label: "Name",
+  required: true,
+});
+
+const selectField = createField({
+  type: "select",
+  label: "Country",
+  options: ["USA", "UK", "Canada"], // Required for select
+});
+
+const numberField = createField({
+  type: "number",
+  label: "Age",
+  min: 0, // Only allowed for number
+  max: 120,
+});
+```
+
+## Best Practices
+
+1. **Name generics meaningfully** - Use `T` for single type, descriptive names for multiple
+2. **Use constraints** - Restrict types when you need specific properties
+3. **Avoid over-genericizing** - Not everything needs to be generic
+4. **Leverage inference** - Let TypeScript infer when possible
+5. **Document complex generics** - Add JSDoc comments for clarity
+
+## Summary
+
+| Concept           | Use Case                   |
+| ----------------- | -------------------------- |
+| Basic generics    | Reusable functions/classes |
+| Constraints       | Restrict type parameters   |
+| Conditional types | Type-level logic           |
+| Mapped types      | Transform object types     |
+| Template literals | String manipulation        |
+| Utility types     | Common transformations     |
+
+Master generics to write truly flexible, type-safe code!

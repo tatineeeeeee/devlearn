@@ -1,0 +1,379 @@
+---
+title: "Zustand: Simple State Management for React"
+description: "Learn how to use Zustand for lightweight, scalable state management without the boilerplate of Redux."
+author: "DevLearn Team"
+date: "2026-01-17"
+difficulty: "beginner"
+tags: ["react", "zustand", "state-management", "hooks"]
+readingTime: "10 min read"
+---
+
+# Zustand: Simple State Management for React
+
+Zustand is a small, fast, and scalable state management solution for React. It's simple to learn but powerful enough for complex applications.
+
+## Why Zustand?
+
+- **Minimal boilerplate** - No providers, reducers, or actions
+- **Hooks-based** - Familiar React patterns
+- **Tiny bundle** - ~1KB gzipped
+- **TypeScript ready** - First-class TypeScript support
+- **Flexible** - Works with any React setup
+
+## Installation
+
+```bash
+npm install zustand
+```
+
+## Creating Your First Store
+
+```typescript
+// store/useCounterStore.ts
+import { create } from "zustand";
+
+interface CounterState {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+  reset: () => void;
+}
+
+export const useCounterStore = create<CounterState>((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+  reset: () => set({ count: 0 }),
+}));
+```
+
+Use it in your components:
+
+```tsx
+"use client";
+
+import { useCounterStore } from "@/store/useCounterStore";
+
+export function Counter() {
+  const { count, increment, decrement, reset } = useCounterStore();
+
+  return (
+    <div>
+      <h2>Count: {count}</h2>
+      <button onClick={decrement}>-</button>
+      <button onClick={increment}>+</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+```
+
+## Selecting State
+
+Select only what you need to prevent unnecessary re-renders:
+
+```tsx
+// ❌ Re-renders on any state change
+const { count, increment } = useCounterStore();
+
+// ✅ Only re-renders when count changes
+const count = useCounterStore((state) => state.count);
+const increment = useCounterStore((state) => state.increment);
+
+// ✅ Select multiple values with shallow comparison
+import { useShallow } from "zustand/react/shallow";
+
+const { count, increment } = useCounterStore(
+  useShallow((state) => ({
+    count: state.count,
+    increment: state.increment,
+  })),
+);
+```
+
+## Real-World Example: Todo Store
+
+```typescript
+// store/useTodoStore.ts
+import { create } from "zustand";
+
+interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: Date;
+}
+
+interface TodoState {
+  todos: Todo[];
+  filter: "all" | "active" | "completed";
+
+  // Actions
+  addTodo: (text: string) => void;
+  toggleTodo: (id: string) => void;
+  deleteTodo: (id: string) => void;
+  setFilter: (filter: TodoState["filter"]) => void;
+  clearCompleted: () => void;
+
+  // Computed (getters)
+  getFilteredTodos: () => Todo[];
+  getStats: () => { total: number; completed: number; active: number };
+}
+
+export const useTodoStore = create<TodoState>((set, get) => ({
+  todos: [],
+  filter: "all",
+
+  addTodo: (text) =>
+    set((state) => ({
+      todos: [
+        ...state.todos,
+        {
+          id: crypto.randomUUID(),
+          text,
+          completed: false,
+          createdAt: new Date(),
+        },
+      ],
+    })),
+
+  toggleTodo: (id) =>
+    set((state) => ({
+      todos: state.todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
+    })),
+
+  deleteTodo: (id) =>
+    set((state) => ({
+      todos: state.todos.filter((todo) => todo.id !== id),
+    })),
+
+  setFilter: (filter) => set({ filter }),
+
+  clearCompleted: () =>
+    set((state) => ({
+      todos: state.todos.filter((todo) => !todo.completed),
+    })),
+
+  getFilteredTodos: () => {
+    const { todos, filter } = get();
+    switch (filter) {
+      case "active":
+        return todos.filter((t) => !t.completed);
+      case "completed":
+        return todos.filter((t) => t.completed);
+      default:
+        return todos;
+    }
+  },
+
+  getStats: () => {
+    const todos = get().todos;
+    return {
+      total: todos.length,
+      completed: todos.filter((t) => t.completed).length,
+      active: todos.filter((t) => !t.completed).length,
+    };
+  },
+}));
+```
+
+Use the todo store:
+
+```tsx
+"use client";
+
+import { useTodoStore } from "@/store/useTodoStore";
+import { useState } from "react";
+
+export function TodoApp() {
+  const [input, setInput] = useState("");
+  const addTodo = useTodoStore((s) => s.addTodo);
+  const filteredTodos = useTodoStore((s) => s.getFilteredTodos());
+  const toggleTodo = useTodoStore((s) => s.toggleTodo);
+  const deleteTodo = useTodoStore((s) => s.deleteTodo);
+  const stats = useTodoStore((s) => s.getStats());
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (input.trim()) {
+      addTodo(input.trim());
+      setInput("");
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Todo App</h1>
+
+      <form onSubmit={handleSubmit} className="mb-4">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Add a todo..."
+          className="border p-2 w-full rounded"
+        />
+      </form>
+
+      <ul className="space-y-2">
+        {filteredTodos.map((todo) => (
+          <li key={todo.id} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleTodo(todo.id)}
+            />
+            <span className={todo.completed ? "line-through" : ""}>
+              {todo.text}
+            </span>
+            <button onClick={() => deleteTodo(todo.id)}>×</button>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-4 text-sm text-gray-600">
+        {stats.active} active, {stats.completed} completed
+      </div>
+    </div>
+  );
+}
+```
+
+## Async Actions
+
+Handle async operations easily:
+
+```typescript
+interface UserState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  fetchUser: (id: string) => Promise<void>;
+  updateUser: (data: Partial<User>) => Promise<void>;
+}
+
+export const useUserStore = create<UserState>((set, get) => ({
+  user: null,
+  isLoading: false,
+  error: null,
+
+  fetchUser: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await fetch(`/api/users/${id}`);
+      if (!res.ok) throw new Error("Failed to fetch user");
+      const user = await res.json();
+      set({ user, isLoading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+    }
+  },
+
+  updateUser: async (data) => {
+    const { user } = get();
+    if (!user) return;
+
+    set({ isLoading: true });
+    try {
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const updatedUser = await res.json();
+      set({ user: updatedUser, isLoading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+    }
+  },
+}));
+```
+
+## Persist Middleware
+
+Save state to localStorage:
+
+```typescript
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface SettingsState {
+  theme: "light" | "dark";
+  language: string;
+  notifications: boolean;
+  setTheme: (theme: "light" | "dark") => void;
+  setLanguage: (lang: string) => void;
+  toggleNotifications: () => void;
+}
+
+export const useSettingsStore = create<SettingsState>()(
+  persist(
+    (set) => ({
+      theme: "light",
+      language: "en",
+      notifications: true,
+      setTheme: (theme) => set({ theme }),
+      setLanguage: (language) => set({ language }),
+      toggleNotifications: () =>
+        set((s) => ({ notifications: !s.notifications })),
+    }),
+    {
+      name: "settings-storage", // localStorage key
+    },
+  ),
+);
+```
+
+## Combining Stores
+
+Split your state into multiple stores for better organization:
+
+```typescript
+// store/index.ts
+export { useUserStore } from "./useUserStore";
+export { useTodoStore } from "./useTodoStore";
+export { useSettingsStore } from "./useSettingsStore";
+
+// Use in components
+import { useUserStore, useTodoStore } from "@/store";
+```
+
+## Devtools
+
+Enable Redux DevTools for debugging:
+
+```typescript
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+
+export const useStore = create<State>()(
+  devtools(
+    (set) => ({
+      // ... your store
+    }),
+    { name: "MyStore" },
+  ),
+);
+```
+
+## Best Practices
+
+1. **Keep stores focused** - One store per domain/feature
+2. **Use selectors** - Prevent unnecessary re-renders
+3. **Colocate actions** - Keep actions with their state
+4. **Type your stores** - TypeScript prevents bugs
+5. **Use middleware wisely** - persist, devtools, etc.
+
+## Zustand vs Redux
+
+| Feature        | Zustand  | Redux          |
+| -------------- | -------- | -------------- |
+| Boilerplate    | Minimal  | Significant    |
+| Learning curve | Easy     | Steep          |
+| Bundle size    | ~1KB     | ~7KB           |
+| DevTools       | ✅       | ✅             |
+| Middleware     | ✅       | ✅             |
+| TypeScript     | Built-in | Requires setup |
+
+Zustand offers the simplicity you want with the power you need!
