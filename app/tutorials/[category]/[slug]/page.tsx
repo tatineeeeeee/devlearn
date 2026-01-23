@@ -17,6 +17,7 @@ import {
   BreadcrumbSchema,
   ArticleSchema,
 } from "@/components";
+import CommentSection from "@/components/CommentSection";
 import { getTutorial, getAllTutorials } from "@/lib/tutorials";
 import { compileMDXContent, extractHeadings } from "@/lib/mdx";
 import { formatDate, cn } from "@/lib/utils";
@@ -210,6 +211,9 @@ export default async function TutorialPage({ params }: TutorialPageProps) {
                 />
               </div>
             </div>
+
+            {/* Comment Section */}
+            <CommentSection tutorialSlug={`${category}/${slug}`} />
           </article>
 
           {/* Sidebar */}
